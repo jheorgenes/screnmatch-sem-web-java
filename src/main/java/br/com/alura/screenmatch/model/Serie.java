@@ -16,21 +16,17 @@ public class Serie {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
   @Column(unique = true)
   private String titulo;
-
   private Integer totalTemporadas;
   private Double avaliacao;
-
   @Enumerated(EnumType.STRING)
   private Categoria genero;
-
   private String atores;
   private String poster;
   private String sinopse;
 
-  @Transient
+  @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER) //Toda vez que tiver uma ação em série, atualiza os episódios também (busca as entidades relacionadas)
   private List<Episodio> episodios = new ArrayList<>();
 
   public Serie() {}
@@ -115,6 +111,7 @@ public class Serie {
   }
 
   public void setEpisodios(List<Episodio> episodios) {
+    episodios.forEach(e -> e.setSerie(this));
     this.episodios = episodios;
   }
 
