@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SerieRepository extends JpaRepository<Serie, Long> {
+
   Optional<Serie> findByTituloContainingIgnoreCase(String nomeSerie);
 
   //Busca Series por Atores que Contém (nomeAtor) ignorando Maiúsculas e minusculas E a avaliação maior ou igual a (avaliação)
@@ -32,4 +33,16 @@ public interface SerieRepository extends JpaRepository<Serie, Long> {
 
   @Query("select e from Serie s join s.episodios e where s = :serie and year(e.dataLancamento) >= :anoLancamento")
   List<Episodio> episodioPorSerieEAno(Serie serie, int anoLancamento);
+
+  List<Serie> findTop5ByOrderByEpisodiosDataLancamentoDesc();
+
+  @Query("SELECT s FROM Serie s " +
+          "JOIN s.episodios e " +
+          "GROUP BY s " +
+          "ORDER BY MAX(e.dataLancamento) DESC LIMIT 5")
+  List<Serie> encontrarEpisodiosMaisRecentes();
+
+  @Query("SELECT e FROM Serie s JOIN s.episodios e WHERE s.id = :id AND e.temporada = :numero")
+  List<Episodio> obterEpisodiosPorTemporada(Long id, Long numero);
+
 }
